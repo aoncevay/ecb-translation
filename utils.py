@@ -1,0 +1,20 @@
+languages = [
+    ("it", "ita_Latn"),
+    ("fi", "fin_Latn"),
+    ("es", "spa_Latn"),
+    ("el", "ell_Grek"),
+    ("lt", "lit_Latn"),
+    ("cs", "ces_Latn"),
+    ("da", "dan_Latn"),
+    ("de", "deu_Latn"),
+    ("et", "est_Latn"),
+    ("fr", "fra_Latn"),
+    ("hu", "hun_Latn"),
+    ("lv", "lvs_Latn"),
+    ("mt", "mlt_Latn"),
+    ("nl", "nld_Latn"),
+    ("pl", "pol_Latn"),
+    ("pt", "por_Latn"),
+    ("sk", "slk_Latn"),
+    ("sl", "slv_Latn")
+]
