@@ -18,3 +18,24 @@ languages = [
     ("sk", "slk_Latn"),
     ("sl", "slv_Latn")
 ]
+
+languages_names = [
+    ("it", "Italian", "ita_Latn"),
+    ("fi", "Finnish", "fin_Latn"),
+    ("es", "Spanish", "spa_Latn"),
+    ("el", "Greek", "ell_Grek"),
+    ("lt", "Lithuanian", "lit_Latn"),
+    ("cs", "Czech", "ces_Latn"),
+    ("da", "Danish", "dan_Latn"),
+    ("de", "German", "deu_Latn"),
+    ("et", "Estonian", "est_Latn"),
+    ("fr", "French", "fra_Latn"),
+    ("hu", "Hungarian", "hun_Latn"),
+    ("lv", "Latvian", "lvs_Latn"),
+    ("mt", "Maltese", "mlt_Latn"),
+    ("nl", "Dutch", "nld_Latn"),
+    ("pl", "Polish", "pol_Latn"),
+    ("pt", "Portuguese", "por_Latn"),
+    ("sk", "Slovak", "slk_Latn"),
+    ("sl", "Slovenian", "slv_Latn")
+]
