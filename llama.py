@@ -16,6 +16,14 @@ def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
         max_new_tokens=256,
     )
     txt_output = output[0]["generated_text"][-1]["content"]
+    if "\n" in txt_output:
+        lines_txt_output = txt_output.strip("\n")
+        max_len = 0
+        for line in lines_txt_output:
+            if len(line.strip()) > max_len:
+                txt_output = line
+                max_len = len(line)
+    txt_output = txt_output.strip()
     return txt_output
 
 def llama_translate_w_template(pipeline, messages_template, src_lang_name, tgt_lang_name, src_text):
