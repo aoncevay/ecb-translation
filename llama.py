@@ -10,7 +10,7 @@ def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
     message = f"{src_lang_name}: {src_text}\n{tgt_lang_name}: "
     output = pipeline(message)
     txt_output = output[0]["generated_text"].split("\n")[0]
-    return output
+    return txt_output
 
 model_id = "meta-llama/Meta-Llama-3-8B"
 token = "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"
