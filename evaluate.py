@@ -7,19 +7,19 @@ import os
 import json
 
 
-def evaluate(results_prefix = "results/nllb-200-distilled-600M"):
+def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
     bleu_calc = sacrebleu.BLEU()
     chrf2_calc = sacrebleu.CHRF(word_order=2)  # this metric is called ChrF++
 
     # Choose your model from Hugging Face Hub
     # model_path = download_model("Unbabel/XCOMET-XL")
     # or for example:
-    model_path = download_model("Unbabel/wmt22-comet-da")
+    #model_path = download_model("Unbabel/wmt22-comet-da")
     # Load the model checkpoint:
-    comet_model = load_from_checkpoint(model_path)
+    #comet_model = load_from_checkpoint(model_path)
 
     # Load data and results from files
-    dataset = load_dataset()
+    dataset = load_dataset(sample=sample)
     results = {}
     for lang, _ in languages:
         print(lang)
@@ -53,13 +53,13 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M"):
         for src, mt, ref in zip(dataset[lang], results[f'{lang}2en'], dataset['en']):
             data_xx2en.append({"src": src, "mt": mt, "ref": ref})
         # Call predict method:
-        comet_en2xx_out = comet_model.predict(data_en2xx, batch_size=8, gpus=1)
-        comet_xx2en_out = comet_model.predict(data_xx2en, batch_size=8, gpus=1)
-        scores[f'en2{lang}']['comet'] = comet_en2xx_out.system_score
-        scores[f'{lang}2en']['comet'] = comet_xx2en_out.system_score
+        #comet_en2xx_out = comet_model.predict(data_en2xx, batch_size=8, gpus=1)
+        #comet_xx2en_out = comet_model.predict(data_xx2en, batch_size=8, gpus=1)
+        scores[f'en2{lang}']['comet'] = 0 #comet_en2xx_out.system_score
+        scores[f'{lang}2en']['comet'] = 0 #comet_xx2en_out.system_score
         #print(lang, comet_en2xx_out.system_score, comet_xx2en_out.system_score)
 
-        print(f"{lang},en2{lang},{en2xx_bleu.score},{en2xx_chrf.score},{comet_en2xx_out.system_score},{lang}2en,{xx2en_bleu.score},{xx2en_chrf.score},{comet_xx2en_out.system_score}")
+        #print(f"{lang},en2{lang},{en2xx_bleu.score},{en2xx_chrf.score},{comet_en2xx_out.system_score},{lang}2en,{xx2en_bleu.score},{xx2en_chrf.score},{comet_xx2en_out.system_score}")
 
     for lang, _ in languages:
         print(f"{lang},en2{lang},{scores[f'en2{lang}']['bleu']},{scores[f'en2{lang}']['chrf']},{scores[f'en2{lang}']['comet']},{lang}2en,{scores[f'{lang}2en']['bleu']},{scores[f'{lang}2en']['chrf']},{scores[f'{lang}2en']['comet']}")
@@ -71,6 +71,6 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M"):
     
 if __name__ == "__main__":
     argv = sys.argv
-    model_name = argv[1] if len(argv) > 1 else 'facebook/nllb-200-distilled-600M'
+    model_name = argv[1] if len(argv) > 1 else "Meta-Llama-3-8B-Instruct" #'nllb-200-distilled-600M'
     
-    evaluate(f"results/{model_name}")
+    evaluate(f"results/{model_name}", sample=50)
