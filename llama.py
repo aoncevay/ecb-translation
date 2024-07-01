@@ -4,6 +4,12 @@ from read import load_dataset
 from utils import languages_names
 from tqdm.auto import tqdm
 import os 
+os.environ['TRANSFORMERS_CACHE'] = "~/air/models/arturo"
+
+def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
+    message = f"{src_lang_name}: {src_text}\n{tgt_lang_name}: "
+    output = pipeline(message)
+    return output
 
 model_id = "meta-llama/Meta-Llama-3-8B"
 token = "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"
@@ -12,13 +18,13 @@ pipeline = transformers.pipeline(
     "text-generation", 
     token = token,
     model=model_id, 
-    cache_dir = "~/air/models/arturo",
     model_kwargs={"torch_dtype": torch.bfloat16}, 
     device_map="cuda"
 )
 
-message = ""
-pipeline(message)
+message = "English: Hello World!\nSpanish: "
+print(pipeline(message))
+
 
 os.makedirs("results.sample50", exist_ok=True)
 prefix = "results.sample50/" + model_id.split("/")[-1]

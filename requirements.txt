@@ -1,8 +1,8 @@
 torch
 sentencepiece
-transformers#==4.33
+transformers
 datasets
 sacremoses
 sacrebleu
 unbabel-comet
-accelerator
+accelerate
