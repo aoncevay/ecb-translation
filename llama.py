@@ -5,7 +5,6 @@ from utils import languages_names
 from tqdm.auto import tqdm
 import os 
 os.environ['TRANSFORMERS_CACHE'] = "~/air/models/arturo"
-token = "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"
 
 def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
     messages = [
@@ -18,7 +17,7 @@ def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
     )
     txt_output = output[0]["generated_text"][-1]["content"]
     if "\n" in txt_output:
-        lines_txt_output = txt_output.strip("\n")
+        lines_txt_output = txt_output.split("\n")
         max_len = 0
         for line in lines_txt_output:
             if len(line.strip()) > max_len:
@@ -38,11 +37,20 @@ def llama_translate_w_template(pipeline, messages_template, src_lang_name, tgt_l
         max_new_tokens=256,
     )
     txt_output = output[0]["generated_text"][-1]["content"]
+    if "\n" in txt_output:
+        lines_txt_output = txt_output.split("\n")
+        max_len = 0
+        for line in lines_txt_output:
+            if len(line.strip()) > max_len:
+                txt_output = line
+                max_len = len(line)
+    txt_output = txt_output.strip()
     return txt_output
 
 
 
 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+token = "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"
 
 pipeline = transformers.pipeline(
     "text-generation", 
@@ -69,7 +77,7 @@ print(output[0]["generated_text"][-1])
 os.makedirs("results.sample50", exist_ok=True)
 prefix = "results.sample50/" + model_id.split("/")[-1]
 
-dataset = load_dataset(sample=5, verbose=False)
+dataset = load_dataset(sample=50, verbose=False)
 results = {}
 
 for lang, lang_name, _ in languages_names:

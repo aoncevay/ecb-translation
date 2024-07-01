@@ -73,4 +73,4 @@ if __name__ == "__main__":
     argv = sys.argv
     model_name = argv[1] if len(argv) > 1 else "Meta-Llama-3-8B-Instruct" #'nllb-200-distilled-600M'
     
-    evaluate(f"results/{model_name}", sample=50)
+    evaluate(f"results.sample50/{model_name}", sample=50)
