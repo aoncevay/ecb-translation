@@ -15,7 +15,7 @@ def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
         messages, 
         max_new_tokens=256,
     )
-    txt_output = output[0]["generated_text"][-1]
+    txt_output = output[0]["generated_text"][-1]["content"]
     return txt_output
 
 def llama_translate_w_template(pipeline, messages_template, src_lang_name, tgt_lang_name, src_text):
@@ -28,7 +28,7 @@ def llama_translate_w_template(pipeline, messages_template, src_lang_name, tgt_l
         messages, 
         max_new_tokens=256,
     )
-    txt_output = output[0]["generated_text"][-1]
+    txt_output = output[0]["generated_text"][-1]["content"]
     return txt_output
 
 
@@ -68,7 +68,7 @@ for lang, lang_name, _ in languages_names:
     print(lang, "en2xx")
     messages = [
         {"role": "system", "content": "You are a professional translator in the banking and finance domain. Provide the required translation only."},
-        {"role": "user", "content": f"English: {dataset_examples['en'][0]}\n{lang_name}: {dataset_examples[lang_name][0]}"},
+        {"role": "user", "content": f"English: {dataset_examples['en'][0]}\n{lang_name}: {dataset_examples[lang][0]}"},
     ]
     results[f"en2{lang}"] = [llama_translate_w_template(pipeline, messages, "English", lang, t) for t in tqdm(dataset["en"])]
     with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
@@ -77,7 +77,7 @@ for lang, lang_name, _ in languages_names:
     print(lang, "xx2en")
     messages = [
         {"role": "system", "content": "You are a professional translator in the banking and finance domain. Provide the required translation only."},
-        {"role": "user", "content": f"{lang_name}: {dataset_examples[lang_name][0]}\nEnglish: {dataset_examples['en'][0]}"},
+        {"role": "user", "content": f"{lang_name}: {dataset_examples[lang][0]}\nEnglish: {dataset_examples['en'][0]}"},
     ]
     results[f"{lang}2en"] = [llama_translate(pipeline, lang, "English", t) for t in tqdm(dataset[lang])]
     with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
