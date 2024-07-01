@@ -7,12 +7,18 @@ import os
 os.environ['TRANSFORMERS_CACHE'] = "~/air/models/arturo"
 
 def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
-    message = f"{src_lang_name}: {src_text}\n{tgt_lang_name}: "
-    output = pipeline(message)
-    txt_output = output[0]["generated_text"].split("\n")[0]
+    messages = [
+        {"role": "system", "content": "You are a professional translator in the banking and finance domain. Provide the required translation only."},
+        {"role": "user", "content": f"{src_lang_name}: {src_text}\n{tgt_lang_name}: "},
+    ]
+    output = pipeline(
+        messages, 
+        max_new_tokens=256,
+    )
+    txt_output = output[0]["generated_text"][-1]
     return txt_output
 
-model_id = "meta-llama/Meta-Llama-3-8B"
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
 token = "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"
 
 pipeline = transformers.pipeline(
@@ -20,12 +26,19 @@ pipeline = transformers.pipeline(
     token = token,
     model=model_id, 
     model_kwargs={"torch_dtype": torch.bfloat16}, 
-    device_map="cuda"
+    device_map="cuda",
 )
 
-message = "English: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels consistent with price stability for some time and , when taking into account the weakening of demand , that upside risks to price stability have diminished somewhat , but they have not disappeared .\nSpanish: "
-print(pipeline(message))
-print(pipeline(message)[0]["generated_text"])
+messages = [
+    {"role": "system", "content": "You are a professional translator in the banking and finance domain. Provide the required translation only."},
+    {"role": "user", "content": "English: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels consistent with price stability for some time and , when taking into account the weakening of demand , that upside risks to price stability have diminished somewhat , but they have not disappeared .\nSpanish: "},
+]
+output = pipeline(
+    messages, 
+    max_new_tokens=256,
+)
+print(output[0]["generated_text"])
+print(output[0]["generated_text"][-1])
 
 
 os.makedirs("results.sample50", exist_ok=True)
