@@ -72,5 +72,6 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
 if __name__ == "__main__":
     argv = sys.argv
     model_name = argv[1] if len(argv) > 1 else "Meta-Llama-3-8B-Instruct" #'nllb-200-distilled-600M'
-    
-    evaluate(f"results.sample50/{model_name}", sample=50)
+    prefix_dir = argv[2] if len(argv) > 2 else "results.sample50.5shot"
+
+    evaluate(f"{prefix_dir}/{model_name}", sample=50)
