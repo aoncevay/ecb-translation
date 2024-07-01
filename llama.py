@@ -42,7 +42,7 @@ def llama_translate_w_template(pipeline, messages_template, src_lang_name, tgt_l
 
 
 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
-token = "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"
+token = "<TOKEN>"
 
 pipeline = transformers.pipeline(
     "text-generation", 
