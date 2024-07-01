@@ -44,8 +44,10 @@ pipeline = transformers.pipeline(
     device_map="cuda",
 )
 
+dataset_examples = load_dataset(sample=51, verbose=False)
 messages = [
     {"role": "system", "content": "You are a professional translator in the banking and finance domain. Provide the required translation only."},
+    {"role": "user", "content": f"English: {dataset_examples['en'][0]}\nSpanish: {dataset_examples['es'][0]}"},
     {"role": "user", "content": "English: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels consistent with price stability for some time and , when taking into account the weakening of demand , that upside risks to price stability have diminished somewhat , but they have not disappeared .\nSpanish: "},
 ]
 output = pipeline(
@@ -59,7 +61,6 @@ print(output[0]["generated_text"][-1])
 os.makedirs("results.sample50", exist_ok=True)
 prefix = "results.sample50/" + model_id.split("/")[-1]
 
-dataset_examples = load_dataset(sample=51, verbose=False)
 dataset = load_dataset(sample=5, verbose=False)
 results = {}
 
