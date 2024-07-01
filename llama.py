@@ -5,6 +5,7 @@ from utils import languages_names
 from tqdm.auto import tqdm
 import os 
 os.environ['TRANSFORMERS_CACHE'] = "~/air/models/arturo"
+token = "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"
 
 def llama_translate(pipeline, src_lang_name, tgt_lang_name, src_text):
     messages = [
@@ -42,7 +43,6 @@ def llama_translate_w_template(pipeline, messages_template, src_lang_name, tgt_l
 
 
 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
-token = "<TOKEN>"
 
 pipeline = transformers.pipeline(
     "text-generation", 
