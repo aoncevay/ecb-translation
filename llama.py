@@ -4,6 +4,7 @@ from read import load_dataset
 from utils import languages_names
 from tqdm.auto import tqdm
 import os 
+from translate import cleanup
 
 os.environ['TRANSFORMERS_CACHE'] = "~/air/models/arturo"
 token = "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"
@@ -35,10 +36,10 @@ def translate_w_template(pipeline, messages_template, src_lang_name, tgt_lang_na
     #]
     messages_template.append({"role": "user", "content": f"{src_lang_name}: {src_text}\n{tgt_lang_name}: "})
     output = pipeline(
-        messages, 
+        messages_template, 
         max_new_tokens=256,
     )
-    txt_output = output[0]["generated_text"][-1]["content"]
+    txt_output = output[0]["generated_text"][-1]["content"].strip()
     if "\n" in txt_output:
         lines_txt_output = txt_output.split("\n")
         max_len = 0
@@ -109,4 +110,5 @@ if __name__ == "__main__":
         for num_shot in list_num_shots:
             print("  num_shot:", num_shot)
             run_llm_translate(model_id=model_id, num_shot=num_shot, num_sample=50,results_dir="results.smpl50")
+            cleanup()
             print()
