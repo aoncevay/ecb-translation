@@ -1,13 +1,13 @@
+import os
+os.environ['TRANSFORMERS_CACHE'] = "~/air/models/arturo"
+token = "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"
+
 import transformers
 import torch
 from read import load_dataset
 from utils import languages_names
 from tqdm.auto import tqdm
-import os 
 from translate import cleanup
-
-os.environ['TRANSFORMERS_CACHE'] = "~/air/models/arturo"
-token = "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"
 
 def translate(pipeline, src_lang_name, tgt_lang_name, src_text):
     messages = [
@@ -103,7 +103,7 @@ def run_llm_translate(model_id = "meta-llama/Meta-Llama-3-8B-Instruct", num_shot
             
 
 if __name__ == "__main__":
-    list_models = ["meta-llama/Meta-Llama-3-8B-Instruct", "Unbabel/TowerInstruct-v0.2", "mistralai/Mixtral-8x7B-Instruct-v0.1", "CohereForAI/aya-23-8B", "bigscience/bloomz-7b1"] #, "mistralai/Mistral-7B-Instruct-v0.3"]
+    list_models = ["meta-llama/Meta-Llama-3-8B-Instruct", "CohereForAI/aya-23-8B", "bigscience/bloomz-7b1"] #, "Unbabel/TowerInstruct-v0.2", "mistralai/Mixtral-8x7B-Instruct-v0.1", "mistralai/Mistral-7B-Instruct-v0.3"]
     list_num_shots = [1, 5, 10]
     for model_id in list_models:
         print("MODEL:", model_id)
@@ -112,3 +112,5 @@ if __name__ == "__main__":
             run_llm_translate(model_id=model_id, num_shot=num_shot, num_sample=50,results_dir="results.smpl50")
             cleanup()
             print()
+
+# ValueError: Could not load model mistralai/Mixtral-8x7B-Instruct-v0.1 with any of the following classes: (<class 'transformers.models.auto.modeling_auto.AutoModelForCausalLM'>, <class 'transformers.models.mixtral.modeling_mixtral.MixtralForCausalLM'>).
