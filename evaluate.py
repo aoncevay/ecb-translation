@@ -19,20 +19,24 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
     #comet_model = load_from_checkpoint(model_path)
 
     # Load data and results from files
-    dataset = load_dataset(sample=sample)
+    dataset = load_dataset(sample=sample, verbose=False)
     results = {}
     for lang, _ in languages:
         print(lang)
-        with open(f"{results_prefix}.en2{lang}.txt", "r") as f:
-            results[f'en2{lang}'] = f.readlines()
-        with open(f"{results_prefix}.{lang}2en.txt", "r") as f:
-            results[f'{lang}2en'] = f.readlines()
+        if os.path.exists(f"{results_prefix}.en2{lang}.txt") and os.path.exists(f"{results_prefix}.{lang}2en.txt"):
+            with open(f"{results_prefix}.en2{lang}.txt", "r") as f:
+                results[f'en2{lang}'] = f.readlines()
+            with open(f"{results_prefix}.{lang}2en.txt", "r") as f:
+                results[f'{lang}2en'] = f.readlines()
 
     scores = {}
 
     for lang, _ in languages:
-        scores[f'{lang}2en'] = {}
-        scores[f'en2{lang}'] = {}
+        scores[f'{lang}2en'] = {'bleu': -1, 'chrf': -1, "comet": -1}
+        scores[f'en2{lang}'] = {'bleu': -1, 'chrf': -1, "comet": -1}
+
+        if f'en2{lang}' not in results or f'{lang}2en' not in results:
+            continue
         #print(f"en-2-{lang}")
         en2xx_bleu = bleu_calc.corpus_score(results[f'en2{lang}'], [dataset[f'{lang}']])
         en2xx_chrf = chrf2_calc.corpus_score(results[f'en2{lang}'], [dataset[f'{lang}']])
@@ -64,14 +68,20 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
     for lang, _ in languages:
         print(f"{lang},en2{lang},{scores[f'en2{lang}']['bleu']},{scores[f'en2{lang}']['chrf']},{scores[f'en2{lang}']['comet']},{lang}2en,{scores[f'{lang}2en']['bleu']},{scores[f'{lang}2en']['chrf']},{scores[f'{lang}2en']['comet']}")
 
-    os.makedirs("scores", exist_ok=True)
-    with open(f"scores/{results_prefix.split('/')[-1].json}", "w", encoding="utf-8") as f:
-        json.dump(scores, f, indent=4)
+    #os.makedirs("scores", exist_ok=True)
+    #with open(f"scores/{results_prefix.split('/')[-1].json}", "w", encoding="utf-8") as f:
+    #    json.dump(scores, f, indent=4)
 
     
 if __name__ == "__main__":
-    argv = sys.argv
-    model_name = argv[1] if len(argv) > 1 else "Meta-Llama-3-8B-Instruct" #'nllb-200-distilled-600M'
-    prefix_dir = argv[2] if len(argv) > 2 else "results.sample50.5shot"
-
-    evaluate(f"{prefix_dir}/{model_name}", sample=50)
+    #argv = sys.argv
+    #model_name = argv[1] if len(argv) > 1 else "Meta-Llama-3-8B-Instruct" #'nllb-200-distilled-600M'
+    #prefix_dir = argv[2] if len(argv) > 2 else "results.sample50.5shot"
+    
+    prefix_dir="results.smpl50"
+    list_models = ["meta-llama/Meta-Llama-3-8B-Instruct", "CohereForAI/aya-23-8B", "bigscience/bloomz-7b1"]
+    for model_id in list_models:
+        for num_shot in [1, 5, 10]:
+            print(model_id, num_shot)
+            evaluate(f"{prefix_dir}/{model_id}.{num_shot}shot", sample=50)
+        break
