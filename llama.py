@@ -34,7 +34,7 @@ def translate_w_template(pipeline, messages_template, src_lang_name, tgt_lang_na
     #    {"role": "system", "content": "You are a professional translator in the banking and finance domain. Provide the required translation only."},
     #    {"role": "user", "content": f"{src_lang_name}: {src_text}\n{tgt_lang_name}: "},
     #]
-    messages_template.append({"role": "user", "content": f"{src_lang_name}: {src_text}\n{tgt_lang_name}: "})
+    messages_template.append({"role": "user", "content": f"Translate the following text from {src_lang_name} into {tgt_lang_name}: {src_text}"})
     output = pipeline(
         messages_template, 
         max_new_tokens=256,
