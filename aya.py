@@ -72,7 +72,7 @@ def generate_aya_23(
   else:
     messages = get_message_format(prompts)
   
-  text_chat=tokenizer.apply_chat_template(messages, tokenize=False)
+  text_chat=tokenizer.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
   print(text_chat)
   input_ids = tokenizer.apply_chat_template(
         messages,
@@ -104,7 +104,8 @@ def generate_aya_23(
 
 prompts = [
   'Translate from English to Spanish: "Rates are competitive, almost always the best in the market"',
-  'Translate from English to Spanish: ""',
+  'Translate from English to Spanish: "As a consequence , the annual growth rate of M3 probably overstates the underlying pace of monetary expansion ."',
+  'Translate from English to Spanish: "It is imperative to avoid broad-based second-round effects in price and wage-setting ."',
 ]
 
 print("...example...")
