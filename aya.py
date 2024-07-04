@@ -42,6 +42,7 @@ def get_message_format(prompts):
 
 def get_message_format_few_shot(prompts):
   messages = [
+    [{"role": "system", "content": "You are a professional translator in the banking and finance domain."}],
     [{"role": "user", "content": "Translate from English to Spanish: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels"}],
     [{"role": "assistant", "content": "El contraste de los resultados del análisis económico con los del análisis monetario confirma claramente que es probable que las tasas de inflación interanual se mantengan durante algún tiempo muy por encima de los niveles compatibles con la estabilidad de precios y que , teniendo en cuenta el debilitamiento de la demanda , los riesgos al alza para la estabilidad de precios se han reducido ligeramente , aunque no han desaparecido ."}]
   ]
@@ -101,15 +102,15 @@ prompts = [
   'Translate from English to Spanish: "Rates are competitive, almost always the best in the market"'
 ]
 
-generations = generate_aya_23(prompts, model)
-generations_few_shot = generate_aya_23(prompts, model, few_shot=True)
-
 print("...example...")
+generations = generate_aya_23(prompts, model)
 for p, g in zip(prompts, generations):
   print(
       "PROMPT", p ,"RESPONSE", g, "\n", sep="\n"
     )
+
 print("...few shot example...")
+generations_few_shot = generate_aya_23(prompts, model, few_shot=True)
 for p, g in zip(prompts, generations_few_shot):
   print(
       "PROMPT", p ,"RESPONSE", g, "\n", sep="\n"
