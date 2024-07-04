@@ -40,18 +40,27 @@ def get_message_format(prompts):
 
   return messages
 
-def get_message_format_few_shot(prompts):
-  messages = [
-    [{"role": "system", "content": "You are a professional translator in the banking and finance domain."}]
-    #[{"role": "user", "content": "Translate from English to Spanish: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels"}],
-    #[{"role": "assistant", "content": "El contraste de los resultados del análisis económico con los del análisis monetario confirma claramente que es probable que las tasas de inflación interanual se mantengan durante algún tiempo muy por encima de los niveles compatibles con la estabilidad de precios y que , teniendo en cuenta el debilitamiento de la demanda , los riesgos al alza para la estabilidad de precios se han reducido ligeramente , aunque no han desaparecido ."}]
-  ]
-  #    
-
+def get_message_format_system(prompts):
+  system_prompt = {"role": "system", "content": "You are a professional translator in the banking and finance domain."}
+  messages = []
 
   for p in prompts:
     messages.append(
-        [{"role": "user", "content": p}]
+        [system_prompt, {"role": "user", "content": p}]
+      )
+
+  return messages
+
+def get_message_format_few_shot(prompts):
+  few_shot_prompt = [
+    {"role": "user", "content": "Translate from English to Spanish: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels"},
+    {"role": "assistant", "content": "El contraste de los resultados del análisis económico con los del análisis monetario confirma claramente que es probable que las tasas de inflación interanual se mantengan durante algún tiempo muy por encima de los niveles compatibles con la estabilidad de precios y que , teniendo en cuenta el debilitamiento de la demanda , los riesgos al alza para la estabilidad de precios se han reducido ligeramente , aunque no han desaparecido ."}
+  ]          
+  messages = []
+
+  for p in prompts:
+    messages.append(
+        few_shot_prompt + [{"role": "user", "content": p}]
       )
 
   return messages
@@ -64,11 +73,14 @@ def generate_aya_23(
       top_p=0.75,
       top_k=0,
       max_new_tokens=1024,
-      few_shot=False
+      prompt_type=0
     ):
 
-  if few_shot:
-    messages = get_message_format_few_shot(prompts)  
+  
+  if prompt_type == 2:
+    messages = get_message_format_system(prompts)
+  elif prompt_type == 3:
+    messages = get_message_format_few_shot(prompts)
   else:
     messages = get_message_format(prompts)
   
@@ -109,14 +121,22 @@ prompts = [
 ]
 
 print("...example...")
-generations = generate_aya_23(prompts, model)
+generations = generate_aya_23(prompts, model, prompt_type=1)
 for p, g in zip(prompts, generations):
   print(
       "PROMPT", p ,"RESPONSE", g, "\n", sep="\n"
     )
 
+print("...system prompt example...")
+generations_system = generate_aya_23(prompts, model, prompt_type=2)
+for p, g in zip(prompts, generations_system):
+  print(
+      "PROMPT", p ,"RESPONSE", g, "\n", sep="\n"
+    )
+
+
 print("...few shot example...")
-generations_few_shot = generate_aya_23(prompts, model, few_shot=True)
+generations_few_shot = generate_aya_23(prompts, model, prompt_type=3)
 for p, g in zip(prompts, generations_few_shot):
   print(
       "PROMPT", p ,"RESPONSE", g, "\n", sep="\n"
