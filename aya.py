@@ -42,10 +42,12 @@ def get_message_format(prompts):
 
 def get_message_format_few_shot(prompts):
   messages = [
-    [{"role": "system", "content": "You are a professional translator in the banking and finance domain."}],
-    [{"role": "user", "content": "Translate from English to Spanish: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels"}],
-    [{"role": "assistant", "content": "El contraste de los resultados del análisis económico con los del análisis monetario confirma claramente que es probable que las tasas de inflación interanual se mantengan durante algún tiempo muy por encima de los niveles compatibles con la estabilidad de precios y que , teniendo en cuenta el debilitamiento de la demanda , los riesgos al alza para la estabilidad de precios se han reducido ligeramente , aunque no han desaparecido ."}]
+    [{"role": "system", "content": "You are a professional translator in the banking and finance domain."}]
+    #[{"role": "user", "content": "Translate from English to Spanish: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels"}],
+    #[{"role": "assistant", "content": "El contraste de los resultados del análisis económico con los del análisis monetario confirma claramente que es probable que las tasas de inflación interanual se mantengan durante algún tiempo muy por encima de los niveles compatibles con la estabilidad de precios y que , teniendo en cuenta el debilitamiento de la demanda , los riesgos al alza para la estabilidad de precios se han reducido ligeramente , aunque no han desaparecido ."}]
   ]
+  #    
+
 
   for p in prompts:
     messages.append(
@@ -69,7 +71,9 @@ def generate_aya_23(
     messages = get_message_format_few_shot(prompts)  
   else:
     messages = get_message_format(prompts)
-
+  
+  text_chat=tokenizer.apply_chat_template(messages, tokenize=False)
+  print(text_chat)
   input_ids = tokenizer.apply_chat_template(
         messages,
         tokenize=True,
@@ -99,7 +103,8 @@ def generate_aya_23(
 
 
 prompts = [
-  'Translate from English to Spanish: "Rates are competitive, almost always the best in the market"'
+  'Translate from English to Spanish: "Rates are competitive, almost always the best in the market"',
+  'Translate from English to Spanish: ""',
 ]
 
 print("...example...")
