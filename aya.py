@@ -158,7 +158,7 @@ def run(MODEL_NAME):
 
 if __name__ == "__main__":
 
-    for model_name in ["bigscience/bloomz-7b1", "mistralai/Mistral-7B-Instruct-v0.3"] #"meta-llama/Meta-Llama-3-8B-Instruct", "CohereForAI/aya-23-8B"]:
+    for model_name in ["bigscience/bloomz-7b1", "mistralai/Mistral-7B-Instruct-v0.3"]: #"meta-llama/Meta-Llama-3-8B-Instruct", "CohereForAI/aya-23-8B"]:
         print(model_name)
         run(model_name)
         cleanup()
