@@ -2,18 +2,18 @@ MODEL_NAME = "CohereForAI/aya-23-8b"
 import os
 os.environ['HF_HOME'] = "~/air/models/arturo/huggingface/hub"
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig,HfArgumentParser,TrainingArguments,pipeline, logging
-from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
+from transformers import AutoModelForCausalLM, AutoTokenizer#, BitsAndBytesConfig,HfArgumentParser,TrainingArguments,pipeline, logging
+#from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
 import torch
-import bitsandbytes as bnb
-from datasets import load_dataset
-from trl import SFTTrainer
-from datasets import Dataset
+#import bitsandbytes as bnb
+#from datasets import load_dataset
+#from trl import SFTTrainer
+#from datasets import Dataset
 import pyarrow as pa
 import pyarrow.dataset as ds
 import pandas as pd
 import re
-import wandb
+#import wandb
 
 # Load Model
 quantization_config = None
