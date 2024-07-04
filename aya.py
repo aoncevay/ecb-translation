@@ -116,6 +116,9 @@ def run(MODEL_NAME):
             )
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    if "mistral" in MODEL_NAME:
+        # Option 1: Use EOS token as padding token
+        tokenizer.pad_token = tokenizer.eos_token
 
     prompts = [
     'Translate from English to Spanish: "Rates are competitive, almost always the best in the market"',
