@@ -1,6 +1,7 @@
 MODEL_NAME = "CohereForAI/aya-23-8b"
 import os
 os.environ['HF_HOME'] = "~/air/models/arturo/huggingface/hub"
+token = "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"
 
 from transformers import AutoModelForCausalLM, AutoTokenizer#, BitsAndBytesConfig,HfArgumentParser,TrainingArguments,pipeline, logging
 #from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
@@ -21,6 +22,7 @@ attn_implementation = None
 
 model = AutoModelForCausalLM.from_pretrained(
           MODEL_NAME,
+          token=token,
           quantization_config=quantization_config,
           attn_implementation=attn_implementation,
           torch_dtype=torch.bfloat16,
