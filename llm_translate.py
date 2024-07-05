@@ -124,7 +124,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
             
             print(lang, "xx2en")
             prompts = [f"Translate the following text from {lang_name} into English: {text}" for text in dataset["en"]]
-            messages = get_message_format_few_shot(prompts, lang_name, "English", dataset_examples[lang][:num_shot], dataset_examples["en"][:num_shot], , system_prompt=system_prompt)
+            messages = get_message_format_few_shot(prompts, lang_name, "English", dataset_examples[lang][:num_shot], dataset_examples["en"][:num_shot], system_prompt=system_prompt)
             results[f"{lang}2en"] = generate(messages, model, tokenizer)
             with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
                 f.write("\n".join(results[f"{lang}2en"]))
