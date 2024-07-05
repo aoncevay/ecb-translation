@@ -30,20 +30,21 @@ def generate(
     input_ids = input_ids.to(model.device)
     prompt_padded_len = len(input_ids[0])
 
-    attention_mask = input_ids.get('attention_mask', None)
+    #attention_mask = input_ids['input_ids'].get('attention_mask', None)
     # If attention_mask is not provided by the tokenizer, generate it manually
-    if attention_mask is None:
-        attention_mask = (input_ids != tokenizer.pad_token_id).long()
+    #if attention_mask is None:
+    #    attention_mask = (input_ids != tokenizer.pad_token_id).long()
 
 
     gen_tokens = model.generate(
             input_ids,
-            attention_mask=attention_mask,
+            #attention_mask=attention_mask,
             temperature=temperature,
             top_p=top_p,
             top_k=top_k,
             max_new_tokens=max_new_tokens,
             do_sample=True,
+            pad_token_id=tokenizer.eos_token_id
         )
 
     # get only generated tokens
