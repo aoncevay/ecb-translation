@@ -30,8 +30,15 @@ def generate(
     input_ids = input_ids.to(model.device)
     prompt_padded_len = len(input_ids[0])
 
+    attention_mask = input_ids.get('attention_mask', None)
+    # If attention_mask is not provided by the tokenizer, generate it manually
+    if attention_mask is None:
+        attention_mask = (input_ids != tokenizer.pad_token_id).long()
+
+
     gen_tokens = model.generate(
             input_ids,
+            attention_mask=attention_mask,
             temperature=temperature,
             top_p=top_p,
             top_k=top_k,
@@ -139,7 +146,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
 
 if __name__ == "__main__":
 
-    for model_name in ["CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
+    for model_name in ["mistralai/Mistral-7B-Instruct-v0.3", "CohereForAI/aya-23-8B"]:
         print("MODEL:", model_name)
         run(model_name, list_num_shots=[1,5], num_sample=50, results_dir="results.smpl50")
         cleanup()
