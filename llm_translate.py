@@ -44,7 +44,7 @@ def generate(
             top_k=top_k,
             max_new_tokens=max_new_tokens,
             do_sample=True,
-            pad_token_id=tokenizer.eos_token_id
+            #pad_token_id=tokenizer.eos_token_id
         )
 
     # get only generated tokens
@@ -128,7 +128,10 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
             prompts = [f"Translate the following text from English into {lang_name}: {text}" for text in dataset[lang]]
             messages = get_message_format_few_shot(prompts, "English", lang_name, dataset_examples["en"][:num_shot], dataset_examples[lang][:num_shot], system_prompt=system_prompt)
             try:
-                results[f"en2{lang}"] = generate(messages, model, tokenizer)
+                #results[f"en2{lang}"] = generate(messages, model, tokenizer)
+                results[f"en2{lang}"] = []
+                for m in messages:
+                    results[f"en2{lang}"].extend(generate([m], model, tokenizer))
                 with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
                     f.write("\n".join(results[f"en2{lang}"]))
             except Exception as e:
@@ -138,7 +141,10 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
             prompts = [f"Translate the following text from {lang_name} into English: {text}" for text in dataset["en"]]
             messages = get_message_format_few_shot(prompts, lang_name, "English", dataset_examples[lang][:num_shot], dataset_examples["en"][:num_shot], system_prompt=system_prompt)
             try:
-                results[f"{lang}2en"] = generate(messages, model, tokenizer)
+                #results[f"{lang}2en"] = generate(messages, model, tokenizer)
+                results[f"{lang}2en"] = []
+                for m in messages:
+                    results[f"{lang}2en"].extend(generate([m], model, tokenizer))
                 with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
                     f.write("\n".join(results[f"{lang}2en"]))
             except Exception as e:
@@ -147,7 +153,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
 
 if __name__ == "__main__":
 
-    for model_name in ["mistralai/Mistral-7B-Instruct-v0.3", "CohereForAI/aya-23-8B"]:
+    for model_name in ["CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
         print("MODEL:", model_name)
         run(model_name, list_num_shots=[1,5], num_sample=50, results_dir="results.smpl50")
         cleanup()
