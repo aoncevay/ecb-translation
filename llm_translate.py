@@ -110,6 +110,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
 
 
     for num_shot in list_num_shots:
+        print("  num_shot", num_shot)
         dataset_examples = load_dataset(sample=num_sample+num_shot, verbose=False)
         prefix = f"{results_dir}/" + model_id.split("/")[-1] + f".{num_shot}shot"
         results = {}
@@ -118,16 +119,22 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
             print(lang, "en2xx")
             prompts = [f"Translate the following text from English into {lang_name}: {text}" for text in dataset[lang]]
             messages = get_message_format_few_shot(prompts, "English", lang_name, dataset_examples["en"][:num_shot], dataset_examples[lang][:num_shot], system_prompt=system_prompt)
-            results[f"en2{lang}"] = generate(messages, model, tokenizer)
-            with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
-                f.write("\n".join(results[f"en2{lang}"]))
+            try:
+                results[f"en2{lang}"] = generate(messages, model, tokenizer)
+                with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
+                    f.write("\n".join(results[f"en2{lang}"]))
+            except Exception as e:
+                print(e)
             
             print(lang, "xx2en")
             prompts = [f"Translate the following text from {lang_name} into English: {text}" for text in dataset["en"]]
             messages = get_message_format_few_shot(prompts, lang_name, "English", dataset_examples[lang][:num_shot], dataset_examples["en"][:num_shot], system_prompt=system_prompt)
-            results[f"{lang}2en"] = generate(messages, model, tokenizer)
-            with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
-                f.write("\n".join(results[f"{lang}2en"]))
+            try:
+                results[f"{lang}2en"] = generate(messages, model, tokenizer)
+                with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
+                    f.write("\n".join(results[f"{lang}2en"]))
+            except Exception as e:
+                print(e)
             
 
 if __name__ == "__main__":
