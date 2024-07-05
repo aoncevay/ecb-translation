@@ -1,0 +1,138 @@
+import os
+os.environ['HF_HOME'] = "~/air/models/arturo/huggingface/hub"
+os.environ['HF_TOKEN']= "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"
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+from utils import languages_names
+from read import load_dataset
+from translate import cleanup
+
+def generate(
+        messages,
+        model,
+        tokenizer,
+        temperature=0.3,
+        top_p=0.75,
+        top_k=0,
+        max_new_tokens=1024,
+        ):
+    
+    #text_chat=tokenizer.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
+    #print(text_chat)
+    input_ids = tokenizer.apply_chat_template(
+            messages,
+            tokenize=True,
+            add_generation_prompt=True,
+            padding=True,
+            return_tensors="pt",
+        )
+    input_ids = input_ids.to(model.device)
+    prompt_padded_len = len(input_ids[0])
+
+    gen_tokens = model.generate(
+            input_ids,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+        )
+
+    # get only generated tokens
+    gen_tokens = [
+        gt[prompt_padded_len:] for gt in gen_tokens
+        ]
+
+    gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
+    return gen_text
+
+
+"""
+def get_message_format_system_few_shot(prompts):
+    system_prompt = {"role": "system", "content": "You are a professional translator in the banking and finance domain."}
+    messages = []
+
+    for p in prompts:
+        messages.append(
+            [system_prompt, {"role": "user", "content": p}]
+        )
+
+    return messages
+"""
+def get_message_format_few_shot(prompts, src_name, tgt_name, src_examples, tgt_examples, system_prompt=False):
+    #few_shot_prompt = [
+    #    {"role": "user", "content": "Translate from English to Spanish: The cross-check of the outcome of the economic analysis with that of the monetary analysis clearly confirms that annual inflation rates are likely to remain well above levels"},
+    #    {"role": "assistant", "content": "El contraste de los resultados del análisis económico con los del análisis monetario confirma claramente que es probable que las tasas de inflación interanual se mantengan durante algún tiempo muy por encima de los niveles compatibles con la estabilidad de precios y que , teniendo en cuenta el debilitamiento de la demanda , los riesgos al alza para la estabilidad de precios se han reducido ligeramente , aunque no han desaparecido ."}
+    #]
+    few_shot_prompt = []
+    for src_e, tgt_e in zip(src_examples, tgt_examples):
+        few_shot_prompt.append({"role": "user", "content": f"Translate from {src_name} to {tgt_name}: {src_e}"})
+        few_shot_prompt.append({"role": "assistant", "content": tgt_e})
+
+    messages = []
+
+    for p in prompts:
+        if not system_prompt:
+            messages.append(
+                few_shot_prompt + [{"role": "user", "content": p}]
+            )
+        else:
+            messages.append(
+                [{"role": "system", "content": "You are a professional translator in the banking and finance domain."}] 
+                + few_shot_prompt + [{"role": "user", "content": p}]
+            )
+
+    return messages
+
+
+def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
+    # Load Model
+    quantization_config = None
+    attn_implementation = None
+
+    model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            quantization_config=quantization_config,
+            attn_implementation=attn_implementation,
+            torch_dtype=torch.bfloat16,
+            device_map="cuda",
+            )
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    system_prompt = True
+    if "mistral" in model_id:
+        # Option 1: Use EOS token as padding token
+        tokenizer.pad_token = tokenizer.eos_token
+        system_prompt = False
+
+    os.makedirs(f"{results_dir}", exist_ok=True)
+    dataset = load_dataset(sample=num_sample, verbose=False)
+
+
+    for num_shot in list_num_shots:
+        dataset_examples = load_dataset(sample=num_sample+num_shot, verbose=False)
+        prefix = f"{results_dir}/" + model_id.split("/")[-1] + f".{num_shot}shot"
+        results = {}
+
+        for lang, lang_name, _ in languages_names:
+            print(lang, "en2xx")
+            prompts = [f"Translate the following text from English into {lang_name}: {text}" for text in dataset[lang]]
+            messages = get_message_format_few_shot(prompts, "English", lang_name, dataset_examples["en"][:num_shot], dataset_examples[lang][:num_shot], system_prompt=system_prompt)
+            results[f"en2{lang}"] = generate(messages, model, tokenizer)
+            with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
+                f.write("\n".join(results[f"en2{lang}"]))
+            
+            print(lang, "xx2en")
+            prompts = [f"Translate the following text from {lang_name} into English: {text}" for text in dataset["en"]]
+            messages = get_message_format_few_shot(prompts, lang_name, "English", dataset_examples[lang][:num_shot], dataset_examples["en"][:num_shot], , system_prompt=system_prompt)
+            results[f"{lang}2en"] = generate(messages, model, tokenizer)
+            with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
+                f.write("\n".join(results[f"{lang}2en"]))
+            
+
+if __name__ == "__main__":
+
+    for model_name in ["CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
+        print("MODEL:", model_name)
+        run(model_name, list_num_shots=[1,5], num_sample=50, results_dir="results.smpl50")
+        cleanup()
