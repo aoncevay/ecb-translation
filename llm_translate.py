@@ -4,10 +4,9 @@ os.environ['HF_TOKEN']= "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"
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
-from utils import languages_names
+from utils import languages_names, not_cleaned_langs
 from read import load_dataset
 from translate import cleanup
-from scrape import not_cleaned_langs
 
 def generate(
         messages,

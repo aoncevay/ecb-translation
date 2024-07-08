@@ -46,6 +46,8 @@ languages_names = [
     ("sv", "Swedish", "_Latn"),
 ]
 
+not_cleaned_langs = ["mt", "de", "et", "ga", "pt"]
+
 #if __name__ == "__main__":
 #    for lang, _ in languages:
 #        print(lang, end=" ")
