@@ -37,5 +37,15 @@ languages_names = [
     ("pl", "Polish", "pol_Latn"),
     ("pt", "Portuguese", "por_Latn"),
     ("sk", "Slovak", "slk_Latn"),
-    ("sl", "Slovenian", "slv_Latn")
+    ("sl", "Slovenian", "slv_Latn"),
+
+    ("bg", "Bulgarian", ""),
+    ("ga", "Irish", "_Latn"),
+    ("ro", "Romanian", "ron_Latn"),
+    ("hr", "Croatian", ""),
+    ("sv", "Swedish", "_Latn"),
 ]
+
+#if __name__ == "__main__":
+#    for lang, _ in languages:
+#        print(lang, end=" ")

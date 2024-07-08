@@ -7,6 +7,7 @@ import torch
 from utils import languages_names
 from read import load_dataset
 from translate import cleanup
+from scrape import not_cleaned_langs
 
 def generate(
         messages,
@@ -114,16 +115,18 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
         system_prompt = False
 
     os.makedirs(f"{results_dir}", exist_ok=True)
-    dataset = load_dataset(sample=num_sample, verbose=False)
+    dataset = load_dataset(filename_prefix="data_2023/ECB", sample=num_sample, verbose=False)
 
 
     for num_shot in list_num_shots:
         print("  num_shot", num_shot)
-        dataset_examples = load_dataset(sample=num_sample+num_shot, verbose=False)
+        dataset_examples = load_dataset(filename_prefix="data_2023/ECB", sample=num_sample+num_shot, verbose=False)
         prefix = f"{results_dir}/" + model_id.split("/")[-1] + f".{num_shot}shot"
         results = {}
 
         for lang, lang_name, _ in languages_names:
+            if lang in not_cleaned_langs:
+                continue
             print(lang, "en2xx")
             prompts = [f"Translate the following text from English into {lang_name}: {text}" for text in dataset[lang]]
             messages = get_message_format_few_shot(prompts, "English", lang_name, dataset_examples["en"][:num_shot], dataset_examples[lang][:num_shot], system_prompt=system_prompt)
@@ -155,5 +158,5 @@ if __name__ == "__main__":
 
     for model_name in ["CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
         print("MODEL:", model_name)
-        run(model_name, list_num_shots=[1,5], num_sample=50, results_dir="results.smpl50")
+        run(model_name, list_num_shots=[1,5], num_sample=351, results_dir="results.2023")
         cleanup()

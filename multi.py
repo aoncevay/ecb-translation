@@ -2,7 +2,7 @@
 import re
 from collections import defaultdict
 
-def is_clean_line(line, min_word_count = 4):
+def is_clean_line(line, min_word_count = 4, max_word_count = -1):
     # Check if the line starts with "http:" or "Navigation path"
     if line.startswith("http:") or line.startswith("Navigation Path :") or line.startswith("Languages :") or "ppt (" in line:
         return False
@@ -17,6 +17,8 @@ def is_clean_line(line, min_word_count = 4):
     # Check for minimum number of words
     words = [word for word in line.split() if word.isalpha()]
     if len(words) < min_word_count:
+        return False
+    if max_word_count and len(words) >= max_word_count:
         return False
     
     return True
