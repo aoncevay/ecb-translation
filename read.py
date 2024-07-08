@@ -9,9 +9,12 @@ def load_dataset(
     dataset = {}
     for lang, _ in languages + [("en", "eng_Latn")]:
         filename = f'{filename_prefix}.{lang}.txt'
-        with open(filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-        dataset[f"{lang}"] = [l.strip() for l in lines][-sample:]
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            dataset[f"{lang}"] = [l.strip() for l in lines][-sample:]
+        except Exception as e:
+            print("Cannot find data for language", lang)
     if verbose:
         print(lang, len(dataset[lang]))
 
