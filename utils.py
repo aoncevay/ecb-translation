@@ -16,7 +16,12 @@ languages = [
     ("pl", "pol_Latn"),
     ("pt", "por_Latn"),
     ("sk", "slk_Latn"),
-    ("sl", "slv_Latn")
+    ("sl", "slv_Latn"),
+    ("bg",  ""),
+    ("ga", "_Latn"),
+    ("ro", "ron_Latn"),
+    ("hr", ""),
+    ("sv", "_Latn"),
 ]
 
 languages_names = [
