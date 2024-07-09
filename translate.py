@@ -52,10 +52,10 @@ def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=51):
         if lang in not_cleaned_langs:
             continue
         print(lang)
-        results[f"en2{lang}"] = [translate(t, model, tokenizer, 'eng_Latn', langcode)[0] for t in tqdm(dataset["en"])]
+        results[f"en2{lang}"] = [translate(t, model, tokenizer, 'eng_Latn', langcode)[0] for t in dataset["en"]]
         with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
             f.write("\n".join(results[f"en2{lang}"]))
-        results[f"{lang}2en"] = [translate(t, model, tokenizer, langcode, 'eng_Latn')[0] for t in tqdm(dataset[lang])]
+        results[f"{lang}2en"] = [translate(t, model, tokenizer, langcode, 'eng_Latn')[0] for t in dataset[lang]]
         with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
             f.write("\n".join(results[f"{lang}2en"]))
 
