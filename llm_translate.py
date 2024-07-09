@@ -52,7 +52,8 @@ def generate(
         gt[prompt_padded_len:] for gt in gen_tokens
         ]
 
-    gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True).strip()
+    gen_text_list = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
+    gen_text = gen_text_list[0].strip()
     if "\n" in gen_text:
         all_gen_text = gen_text.split("\n")
         max_len = 0
@@ -62,7 +63,8 @@ def generate(
                 max_len = len(i_gen_text)
         if max_len == 0:
             print("error in generation:", all_gen_text)
-    return gen_text
+        gen_text_list = [gen_text]
+    return gen_text_list
 
 
 """
