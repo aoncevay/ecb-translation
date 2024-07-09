@@ -52,7 +52,16 @@ def generate(
         gt[prompt_padded_len:] for gt in gen_tokens
         ]
 
-    gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
+    gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True).strip()
+    if "\n" in gen_text:
+        all_gen_text = gen_text.split("\n")
+        max_len = 0
+        for i_gen_text in all_gen_text:
+            if len(i_gen_text) > max_len:
+                gen_text = i_gen_text
+                max_len = len(i_gen_text)
+        if max_len == 0:
+            print("error in generation:", all_gen_text)
     return gen_text
 
 
@@ -75,8 +84,8 @@ def get_message_format_few_shot(prompts, src_name, tgt_name, src_examples, tgt_e
     #]
     few_shot_prompt = []
     for src_e, tgt_e in zip(src_examples, tgt_examples):
-        few_shot_prompt.append({"role": "user", "content": f"Translate from {src_name} to {tgt_name}: {src_e}"})
-        few_shot_prompt.append({"role": "assistant", "content": tgt_e})
+        few_shot_prompt.append({"role": "user", "content": f'Translate from {src_name} to {tgt_name}: "{src_e}"'})
+        few_shot_prompt.append({"role": "assistant", "content": f'"{tgt_e}"'})
 
     messages = []
 
@@ -157,5 +166,5 @@ if __name__ == "__main__":
 
     for model_name in ["CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
         print("MODEL:", model_name)
-        run(model_name, list_num_shots=[1,5], num_sample=351, results_dir="results.2023")
+        run(model_name, list_num_shots=[1], num_sample=51, results_dir="results.2023")
         cleanup()
