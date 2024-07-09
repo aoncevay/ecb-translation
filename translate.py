@@ -1,3 +1,6 @@
+import os
+os.environ['HF_HOME'] = "~/air/models/arturo/huggingface/hub"
+
 from utils import languages, not_cleaned_langs
 from transformers import NllbTokenizer
 from tqdm.auto import tqdm, trange
@@ -9,7 +12,7 @@ import numpy as np
 import torch
 from tqdm.auto import tqdm
 from read import load_dataset
-import os
+
 import sys
 
 
