@@ -1,4 +1,4 @@
-from utils import languages
+from utils import languages, not_cleaned_langs
 from transformers import NllbTokenizer
 from tqdm.auto import tqdm, trange
 from transformers import AutoModelForSeq2SeqLM
@@ -46,6 +46,8 @@ def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=51):
 
     results = {}
     for lang, langcode in languages:
+        if lang in not_cleaned_langs:
+            continue
         print(lang)
         results[f"en2{lang}"] = [translate(t, model, tokenizer, 'eng_Latn', langcode)[0] for t in tqdm(dataset["en"])]
         with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
