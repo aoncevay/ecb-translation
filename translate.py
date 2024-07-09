@@ -2,6 +2,7 @@ from utils import languages
 from transformers import NllbTokenizer
 from tqdm.auto import tqdm, trange
 from transformers import AutoModelForSeq2SeqLM
+#transformers==4.33?
 import gc
 import random
 import numpy as np
@@ -10,6 +11,7 @@ from tqdm.auto import tqdm
 from read import load_dataset
 import os
 import sys
+
 
 
 def cleanup():
@@ -31,11 +33,11 @@ def translate(text, model, tokenizer, src_lang='eng_Latn', tgt_lang='spa_Latn', 
     return tokenizer.batch_decode(result, skip_special_tokens=True)
 
 
-def run(model_name = 'facebook/nllb-200-distilled-600M'):
-    os.makedirs("results", exist_ok=True)
-    prefix = f"results/{model_name.split('/')[-1]}"
+def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=51):
+    os.makedirs("results.2023", exist_ok=True)
+    prefix = f"results.2023/{model_name.split('/')[-1]}"
 
-    dataset = load_dataset()
+    dataset = load_dataset(filename_prefix="data_2023/ECB", sample=num_sample, verbose=False)
     tokenizer = NllbTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     
@@ -55,5 +57,5 @@ def run(model_name = 'facebook/nllb-200-distilled-600M'):
 
 if __name__ == "__main__":
     argv = sys.argv
-    model_name = argv[1] if len(argv) > 1 else 'facebook/nllb-200-distilled-600M'
-    run(model_name)
+    model_name = argv[1] if len(argv) > 1 else 'facebook/nllb-200-3.3B' #'facebook/nllb-200-distilled-600M'
+    run(model_name, num_sample=51)

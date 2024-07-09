@@ -17,11 +17,11 @@ languages = [
     ("pt", "por_Latn"),
     ("sk", "slk_Latn"),
     ("sl", "slv_Latn"),
-    ("bg",  ""),
-    ("ga", "_Latn"),
+    ("bg", "bul_Cyrl"),
+    ("ga", "gle_Latn"),
     ("ro", "ron_Latn"),
-    ("hr", ""),
-    ("sv", "_Latn"),
+    ("hr", "hrv_Latn"),
+    ("sv", "swe_Latn"),
 ]
 
 languages_names = [
@@ -44,11 +44,11 @@ languages_names = [
     ("sk", "Slovak", "slk_Latn"),
     ("sl", "Slovenian", "slv_Latn"),
 
-    ("bg", "Bulgarian", ""),
-    ("ga", "Irish", "_Latn"),
+    ("bg", "Bulgarian", "bul_Cyrl"),
+    ("ga", "Irish", "gle_Latn"),
     ("ro", "Romanian", "ron_Latn"),
-    ("hr", "Croatian", ""),
-    ("sv", "Swedish", "_Latn"),
+    ("hr", "Croatian", "hrv_Latn"),
+    ("sv", "Swedish", "swe_Latn"),
 ]
 
 not_cleaned_langs = ["mt", "de", "et", "ga", "pt"]
