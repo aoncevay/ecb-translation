@@ -19,7 +19,7 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
     #comet_model = load_from_checkpoint(model_path)
 
     # Load data and results from files
-    dataset = load_dataset(sample=sample, verbose=False)
+    dataset = load_dataset(filename_prefix="./data_2023/multi.ECB", sample=sample, verbose=False)
     results = {}
     for lang, _ in languages:
         if lang in not_cleaned_langs:
