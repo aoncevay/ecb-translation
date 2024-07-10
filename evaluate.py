@@ -1,6 +1,6 @@
 import sacrebleu
 from comet import download_model, load_from_checkpoint
-from utils import languages
+from utils import languages, not_cleaned_langs
 from read import load_dataset
 import sys
 import os
@@ -22,6 +22,8 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
     dataset = load_dataset(sample=sample, verbose=False)
     results = {}
     for lang, _ in languages:
+        if lang in not_cleaned_langs:
+            continue
         #print(lang)
         #if os.path.exists(f"{results_prefix}.en2{lang}.txt") and os.path.exists(f"{results_prefix}.{lang}2en.txt"):
         try:
@@ -35,8 +37,10 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
     scores = {}
 
     for lang, _ in languages:
-        scores[f'{lang}2en'] = {'bleu': -1, 'chrf': -1, "comet": -1}
-        scores[f'en2{lang}'] = {'bleu': -1, 'chrf': -1, "comet": -1}
+        if lang in not_cleaned_langs:
+            continue
+        scores[f'{lang}2en'] = {}#'bleu': -1, 'chrf': -1, "comet": -1}
+        scores[f'en2{lang}'] = {}#'bleu': -1, 'chrf': -1, "comet": -1}
 
         #if f'en2{lang}' not in results or f'{lang}2en' not in results:
         #    continue
@@ -72,6 +76,8 @@ def evaluate(results_prefix = "results/nllb-200-distilled-600M", sample=0):
         #print(f"{lang},en2{lang},{en2xx_bleu.score},{en2xx_chrf.score},{comet_en2xx_out.system_score},{lang}2en,{xx2en_bleu.score},{xx2en_chrf.score},{comet_xx2en_out.system_score}")
 
     for lang, _ in languages:
+        if lang in not_cleaned_langs:
+            continue
         try:
             print(f"{lang},en2{lang},{scores[f'en2{lang}']['bleu']},{scores[f'en2{lang}']['chrf']},{scores[f'en2{lang}']['comet']},{lang}2en,{scores[f'{lang}2en']['bleu']},{scores[f'{lang}2en']['chrf']},{scores[f'{lang}2en']['comet']}")
         except:
@@ -86,10 +92,12 @@ if __name__ == "__main__":
     #model_name = argv[1] if len(argv) > 1 else "Meta-Llama-3-8B-Instruct" #'nllb-200-distilled-600M'
     #prefix_dir = argv[2] if len(argv) > 2 else "results.sample50.5shot"
     
-    prefix_dir="results.smpl50"
-    list_models = ["meta-llama/Meta-Llama-3-8B-Instruct", "CohereForAI/aya-23-8B", "bigscience/bloomz-7b1"]
-    for model_id in list_models:
-        for num_shot in [1, 5, 10]:
-            print(model_id, num_shot)
-            evaluate(f"{prefix_dir}/{model_id}.{num_shot}shot", sample=50)
-        break
+    prefix_dir="results.2023"
+    list_systems = ["aya-23-8B.1shot", "nllb-200-distilled-600M", "nllb-200-3.3B"] #, "Meta-Llama-3-8B-Instruct", "Mistral-7B-Instruct-v0.3"]
+    for model_id in list_systems:
+        if not os.path.exists(f"{prefix_dir}/{model_id}.en2it.txt"):
+            continue
+        #for num_shot in [1]:
+        print(model_id)
+        evaluate(f"{prefix_dir}/{model_id}", sample=51)
+        #break
