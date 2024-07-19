@@ -8,10 +8,11 @@ from utils import languages_names, not_cleaned_langs
 from read import load_dataset
 from translate import cleanup
 
-def generate_pipeline(pipeline, messages_template):
+def generate_pipeline(pipeline, tokenizer, messages_template):
     output = pipeline(
         messages_template, 
         max_new_tokens=512,
+        pad_token_id=tokenizer.eos_token_id,
     )
     txt_output = output[0]["generated_text"][-1]["content"].strip()
     if "\n" in txt_output:
@@ -173,7 +174,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
                 results[f"en2{lang}"] = []
                 for m in messages:
                     if "llama" in model_id:
-                        results[f"en2{lang}"].extend(generate_pipeline(llm_pipeline, m))
+                        results[f"en2{lang}"].extend(generate_pipeline(llm_pipeline, tokenizer, m))
                     else:
                         results[f"en2{lang}"].extend(generate([m], model, tokenizer))
                 with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
@@ -189,7 +190,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
                 results[f"{lang}2en"] = []
                 for m in messages:
                     if "llama" in model_id:
-                        results[f"en2{lang}"].extend(generate_pipeline(llm_pipeline, m))
+                        results[f"en2{lang}"].extend(generate_pipeline(llm_pipeline, tokenizer, m))
                     else:
                         results[f"{lang}2en"].extend(generate([m], model, tokenizer))
                 with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
