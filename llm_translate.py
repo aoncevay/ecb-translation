@@ -2,11 +2,28 @@ import os
 os.environ['HF_HOME'] = "~/air/models/arturo/huggingface/hub"
 os.environ['HF_TOKEN']= "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"
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 import torch
 from utils import languages_names, not_cleaned_langs
 from read import load_dataset
 from translate import cleanup
+
+def generate_pipeline(pipeline, messages_template):
+    output = pipeline(
+        messages_template, 
+        max_new_tokens=256,
+    )
+    txt_output = output[0]["generated_text"][-1]["content"].strip()
+    if "\n" in txt_output:
+        lines_txt_output = txt_output.split("\n")
+        max_len = 0
+        for line in lines_txt_output:
+            if len(line.strip()) > max_len:
+                txt_output = line
+                max_len = len(line)
+    txt_output = txt_output.strip()
+    return txt_output
+
 
 def generate(
         messages,
@@ -110,14 +127,22 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
     quantization_config = None
     attn_implementation = None
 
-    model = AutoModelForCausalLM.from_pretrained(
-            model_id,
-            quantization_config=quantization_config,
-            attn_implementation=attn_implementation,
-            torch_dtype=torch.bfloat16,
-            device_map="cuda",
+    if "llama" in model_id:
+        llm_pipeline = pipeline(
+            "text-generation", 
+            model=model_id, 
+            model_kwargs={"torch_dtype": torch.bfloat16}, 
+            device_map="cuda"
             )
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                quantization_config=quantization_config,
+                attn_implementation=attn_implementation,
+                torch_dtype=torch.bfloat16,
+                device_map="cuda",
+                )
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
     system_prompt = True
     if "mistral" in model_id:
         # Option 1: Use EOS token as padding token
@@ -145,7 +170,10 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
                 #results[f"en2{lang}"] = generate(messages, model, tokenizer)
                 results[f"en2{lang}"] = []
                 for m in messages:
-                    results[f"en2{lang}"].extend(generate([m], model, tokenizer))
+                    if "llama" in model_id:
+                        results[f"en2{lang}"].extend(generate_pipeline(llm_pipeline, m))
+                    else:
+                        results[f"en2{lang}"].extend(generate([m], model, tokenizer))
                 with open(f"{prefix}.en2{lang}.txt", "w", encoding="utf-8") as f:
                     f.write("\n".join(results[f"en2{lang}"]))
             except Exception as e:
@@ -158,7 +186,10 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
                 #results[f"{lang}2en"] = generate(messages, model, tokenizer)
                 results[f"{lang}2en"] = []
                 for m in messages:
-                    results[f"{lang}2en"].extend(generate([m], model, tokenizer))
+                    if "llama" in model_id:
+                        results[f"en2{lang}"].extend(generate_pipeline(llm_pipeline, m))
+                    else:
+                        results[f"{lang}2en"].extend(generate([m], model, tokenizer))
                 with open(f"{prefix}.{lang}2en.txt", "w", encoding="utf-8") as f:
                     f.write("\n".join(results[f"{lang}2en"]))
             except Exception as e:
@@ -167,7 +198,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
 
 if __name__ == "__main__":
 
-    for model_name in ["meta-llama/Meta-Llama-3-8B-Instruct", "CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
+    for model_name in ["meta-llama/Meta-Llama-3-8B-Instruct", "mistralai/Mistral-7B-Instruct-v0.3"]: #, "CohereForAI/aya-23-8B",
         print("MODEL:", model_name)
         run(model_name, list_num_shots=[1], num_sample=51, results_dir="results.2023")
         cleanup()
