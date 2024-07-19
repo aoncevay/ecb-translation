@@ -30,7 +30,7 @@ def translate_batch(texts, model, tokenizer, src_lang='eng_Latn', tgt_lang='spa_
     return tokenizer.batch_decode(result, skip_special_tokens=True)
 
 
-def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=51, batch_size=16):
+def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=0, batch_size=16):
     os.makedirs("results.2023", exist_ok=True)
     prefix = f"results.2023/{model_name.split('/')[-1]}"
 
@@ -44,7 +44,7 @@ def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=51, batch_si
         return {"translations": translations}
 
     #cleanup()
-    #model.cuda();
+    model.cuda();
 
     results = {}
     #full_dataset = Dataset.from_dict(dataset)
@@ -71,4 +71,4 @@ def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=51, batch_si
 if __name__ == "__main__":
     argv = sys.argv
     model_name = argv[1] if len(argv) > 1 else 'facebook/nllb-200-3.3B' #'facebook/nllb-200-distilled-600M'
-    run(model_name, num_sample=51)
+    run(model_name, num_sample=0)
