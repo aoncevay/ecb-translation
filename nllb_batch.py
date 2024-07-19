@@ -47,9 +47,11 @@ def run(model_name = 'facebook/nllb-200-distilled-600M', num_sample=51, batch_si
     #model.cuda();
 
     results = {}
+    #full_dataset = Dataset.from_dict(dataset)
     eng_dataset = Dataset.from_dict({"en": dataset["en"]})
     for lang, langcode in languages:
         if lang in not_cleaned_langs or os.path.exists(f"{prefix}.{lang}2en.txt"):
+            print(lang, "skipped")
             continue
         print(lang)       
         results[f"en2{lang}"] = eng_dataset.map(
