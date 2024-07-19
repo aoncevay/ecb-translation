@@ -1,5 +1,5 @@
 import os
-os.environ['HF_HOME'] = "~/air/models/arturo/huggingface/hub"
+#os.environ['HF_HOME'] = "~/air/models/arturo/huggingface/hub"
 
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
@@ -40,14 +40,17 @@ dataset = Dataset.from_dict(data)
 
 # Function to find optimal batch size
 def find_optimal_batch_size(model, tokenizer, dataset, src_lang='eng_Latn', tgt_lang='spa_Latn'):
-    batch_size = 1
-    max_batch_size = 1
+    batch_size = 16
+    max_batch_size = 16
     while True:
         try:
             print(f"Testing batch size: {batch_size}")
             def batch_translate(batch):
                 return {"translations": translate_batch(batch["en"], model, tokenizer, src_lang, tgt_lang)}
             translated_dataset = dataset.map(batch_translate, batched=True, batch_size=batch_size)
+            print(len(translated_dataset))
+            print(translated_dataset.keys())
+            print(len(translated_dataset["translations"]))
             max_batch_size = batch_size
             batch_size *= 2
         except RuntimeError as e:
