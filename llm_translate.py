@@ -11,7 +11,7 @@ from translate import cleanup
 def generate_pipeline(pipeline, messages_template):
     output = pipeline(
         messages_template, 
-        max_new_tokens=256,
+        max_new_tokens=512,
     )
     txt_output = output[0]["generated_text"][-1]["content"].strip()
     if "\n" in txt_output:
@@ -127,11 +127,13 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
     quantization_config = None
     attn_implementation = None
 
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    eos_token_id = tokenizer.eos_token_id
     if "llama" in model_id:
         llm_pipeline = pipeline(
             "text-generation", 
             model=model_id, 
-            model_kwargs={"torch_dtype": torch.bfloat16}, 
+            model_kwargs={"torch_dtype": torch.bfloat16, "pad_token_id": eos_token_id}, 
             device_map="cuda"
             )
     else:
@@ -142,7 +144,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
                 torch_dtype=torch.bfloat16,
                 device_map="cuda",
                 )
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        
     system_prompt = True
     if "mistral" in model_id:
         # Option 1: Use EOS token as padding token
