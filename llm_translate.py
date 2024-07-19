@@ -135,7 +135,8 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
         results = {}
 
         for lang, lang_name, _ in languages_names:
-            if lang in not_cleaned_langs:
+            if lang in not_cleaned_langs or os.path.exists(f"{prefix}.{lang}2en.txt"):
+                print(lang, "skipped")
                 continue
             print(lang, "en2xx")
             prompts = [f"Translate the following text from English into {lang_name}: {text}" for text in dataset[lang]]
@@ -166,7 +167,7 @@ def run(model_id, list_num_shots=[1,5], num_sample=0, results_dir="results"):
 
 if __name__ == "__main__":
 
-    for model_name in ["CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
+    for model_name in ["meta-llama/Meta-Llama-3-8B-Instruct", "CohereForAI/aya-23-8B", "mistralai/Mistral-7B-Instruct-v0.3"]:
         print("MODEL:", model_name)
         run(model_name, list_num_shots=[1], num_sample=51, results_dir="results.2023")
         cleanup()
